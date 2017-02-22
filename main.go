@@ -56,7 +56,7 @@ func main() {
 				writeTimeSeriesValue(s, projectID, stat, applicationName, tps)
 			}
 		}
-
+		oldStats = stats
 	}
 }
 
