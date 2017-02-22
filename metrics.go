@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
@@ -28,6 +27,7 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 	if err != nil {
 		return fmt.Errorf("Could not create custom metric: %v", err)
 	}
+	return nil
 }
 
 // getCustomMetric reads the custom metric created.
@@ -78,7 +78,6 @@ func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, a
 		TimeSeries: []*monitoring.TimeSeries{&timeseries},
 	}
 
-	log.Printf("writeTimeseriesRequest: %s\n", formatResource(createTimeseriesRequest))
 	_, err := s.Projects.TimeSeries.Create(projectResource(projectID), &createTimeseriesRequest).Do()
 	if err != nil {
 		return fmt.Errorf("Could not write time series value, %v ", err)

@@ -29,43 +29,41 @@ func validateStats(statnames []string) error {
   // Open the default Varnish Shared Memory file
   varnish, err := vago.Open("")
   if err != nil {
-    fmt.Println(err)
-    return
+    return fmt.Errorf("Could not open VSM Connection: %v", err)
   }
 
   stats := varnish.Stats()
   statFound := false
   for _, statname := range statnames {
-    found = false
+    statFound = false
     for field, _ := range stats {
       if statname == field {
         statFound = true
       }
     }
     if statFound != true {
-      err := statname + " is not valid varnishstat name"
-      return err
+      return fmt.Errorf("%s is not a valid varnishstat counter", statname)
     }
   }
   varnish.Close()
   return nil
 }
 
-func getStats(statnames []string) stats map[string]uint64 {
+func getStats(statnames []string) (map[string]uint64, error) {
   // Open the default Varnish Shared Memory file
   varnish, err := vago.Open("")
   if err != nil {
-    fmt.Println(err)
-    return
+    return nil, fmt.Errorf("Could not open VSM Connection: %v", err)
   }
 
   stats := varnish.Stats()
-  for field, value := range stats {
-    for _, statname := range statnames {
-      if field == statname {
-        fmt.Printf("%s\t%d\n", field, value)
-      }
-    }
-  }
+  //for field, value := range stats {
+  //  for _, statname := range statnames {
+  //    if field == statname {
+  //      fmt.Printf("%s\t%d\n", field, value)
+  //    }
+  //  }
+  //}
   varnish.Close()
+  return stats, nil
 }

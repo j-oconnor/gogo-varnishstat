@@ -25,8 +25,13 @@ func main() {
 
 		// Update the ticker
 		t = minuteTicker()
+		// stats is the entire varnishstat output
+		stats,err := getStats(statnames)
+		if err != nil {
+			log.Fatalf("Error getting stats: %v", err)
+		}
+		
 
-		stats := getStats(statnames)
 	}
 }
 
