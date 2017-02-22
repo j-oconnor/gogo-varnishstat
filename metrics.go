@@ -14,6 +14,9 @@ import (
 func projectResource(projectID string) string {
 	return "projects/" + projectID
 }
+func customMetricType(metricType string) string {
+	return "custom.googleapis.com" + metricType
+}
 
 func createService(ctx context.Context) (*monitoring.Service, error) {
 	hc, err := google.DefaultClient(ctx, monitoring.MonitoringScope)
@@ -30,13 +33,13 @@ func createService(ctx context.Context) (*monitoring.Service, error) {
 func createCustomMetric(s *monitoring.Service, projectID, metricType string) error {
 	ld := monitoring.LabelDescriptor{Key: "application", ValueType: "STRING", Description: "Application that this varnish caches"}
 	md := monitoring.MetricDescriptor{
-		Type:        metricType,
+		Type:        customMetricType(metricType),
 		Labels:      []*monitoring.LabelDescriptor{&ld},
 		MetricKind:  "GAUGE",
 		ValueType:   "INT64",
 		Unit:        "items",
 		Description: "An arbitrary measurement",
-		DisplayName: "Custom Metric",
+		DisplayName: metricType,
 	}
 	_, err := s.Projects.MetricDescriptors.Create(projectResource(projectID), &md).Do()
 	if err != nil {
@@ -64,7 +67,7 @@ func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, a
 
 	timeseries := monitoring.TimeSeries{
 		Metric: &monitoring.Metric{
-			Type: metricType,
+			Type: customMetricType(metricType),
 			Labels: map[string]string{
 				"application": application,
 			},

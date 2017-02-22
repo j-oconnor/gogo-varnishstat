@@ -49,7 +49,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error getting stats: %v", err)
 		}
-		if oldstats != nil {
+		if oldStats != nil {
 			for stat := range stats {
 				delta := stats[stat] - oldStats[stat]
 				tps := delta / int64(interval)
