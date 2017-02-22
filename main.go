@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -35,17 +36,19 @@ func main() {
 	}
 	log.Println("Start collection loop")
 	oldStats := make(map[string]int64)
+
 	// Tick on the minute
 	t := minuteTicker()
 
 	for {
 		// Wait for ticker to send
 		<-t.C
-
+		fmt.Println(oldStats)
 		// Update the ticker
 		t = minuteTicker()
 		// stats is the entire varnishstat output
 		stats, err := getStats(statnames)
+		fmt.Println(stats)
 		if err != nil {
 			log.Fatalf("Error getting stats: %v", err)
 		}
