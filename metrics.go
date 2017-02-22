@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
+
+	"golang.org/x/oauth2/google"
 
 	"cloud.google.com/go/compute/metadata"
 	"google.golang.org/api/monitoring/v3"
@@ -10,6 +13,18 @@ import (
 
 func projectResource(projectID string) string {
 	return "projects/" + projectID
+}
+
+func createService(ctx context.Context) (*monitoring.Service, error) {
+	hc, err := google.DefaultClient(ctx, monitoring.MonitoringScope)
+	if err != nil {
+		return nil, err
+	}
+	s, err := monitoring.New(hc)
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func createCustomMetric(s *monitoring.Service, projectID, metricType string) error {
@@ -23,7 +38,7 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 		Description: "An arbitrary measurement",
 		DisplayName: "Custom Metric",
 	}
-	resp, err := s.Projects.MetricDescriptors.Create(projectResource(projectID), &md).Do()
+	_, err := s.Projects.MetricDescriptors.Create(projectResource(projectID), &md).Do()
 	if err != nil {
 		return fmt.Errorf("Could not create custom metric: %v", err)
 	}
@@ -31,14 +46,14 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 }
 
 // getCustomMetric reads the custom metric created.
-func getCustomMetric(s *monitoring.Service, projectID, metricType string) (*monitoring.ListMetricDescriptorsResponse, error) {
-	resp, err := s.Projects.MetricDescriptors.List(projectResource(projectID)).
-		Filter(fmt.Sprintf("metric.type=\"%s\"", metricType)).Do()
-	if err != nil {
-		return nil, fmt.Errorf("Could not get custom metric: %v", err)
-	}
-	return resp, nil
-}
+// func getCustomMetric(s *monitoring.Service, projectID, metricType string) (*monitoring.ListMetricDescriptorsResponse, error) {
+// 	resp, err := s.Projects.MetricDescriptors.List(projectResource(projectID)).
+// 		Filter(fmt.Sprintf("metric.type=\"%s\"", metricType)).Do()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("Could not get custom metric: %v", err)
+// 	}
+// 	return resp, nil
+// }
 
 // fix this up
 // writeTimeSeriesValue writes a value for the custom metric created
