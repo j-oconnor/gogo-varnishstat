@@ -96,9 +96,10 @@ func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, a
 		TimeSeries: []*monitoring.TimeSeries{&timeseries},
 	}
 
-	_, err := s.Projects.TimeSeries.Create(projectResource(projectID), &createTimeseriesRequest).Do()
+	resp, err := s.Projects.TimeSeries.Create(projectResource(projectID), &createTimeseriesRequest).Do()
 	if err != nil {
 		return fmt.Errorf("Could not write time series value, %v ", err)
 	}
+	fmt.Println(resp)
 	return nil
 }
