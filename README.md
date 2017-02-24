@@ -10,6 +10,9 @@ Uses
 "MAIN.backend_busy", "MAIN.backend_reuse", "MAIN.threads", "MAIN.n_object",
 "MAIN.n_lru_nuked", "MAIN.bans_obj", "MAIN.bans_req"
 ```
+
+Metrics appear in stackdriver as:  `custom\varnish.<COUNTERNAME>:gce_instance` with labels for instance ID, zone, project, and appname.
+
 ## Running
 Collection loop is timed to every minute.  Metric value pushed is a delta calculation from prior minute and current minute.  Google Metrics are created as gauge's.
 
