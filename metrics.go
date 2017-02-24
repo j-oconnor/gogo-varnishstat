@@ -15,7 +15,7 @@ func projectResource(projectID string) string {
 	return "projects/" + projectID
 }
 func customMetricType(metricType string) string {
-	return "custom.googleapis.com" + metricType
+	return "custom.googleapis.com/varnish." + metricType
 }
 
 func createService(ctx context.Context) (*monitoring.Service, error) {
@@ -38,7 +38,7 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 		MetricKind:  "GAUGE",
 		ValueType:   "INT64",
 		Unit:        "items",
-		Description: "An arbitrary measurement",
+		Description: "Varnishstat " + metricType + " per min",
 		DisplayName: metricType,
 	}
 	_, err := s.Projects.MetricDescriptors.Create(projectResource(projectID), &md).Do()
@@ -58,7 +58,6 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 // 	return resp, nil
 // }
 
-// fix this up
 // writeTimeSeriesValue writes a value for the custom metric created
 func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, application string, value int64) error {
 	now := time.Now().UTC().Format(time.RFC3339Nano)
@@ -95,11 +94,9 @@ func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, a
 	createTimeseriesRequest := monitoring.CreateTimeSeriesRequest{
 		TimeSeries: []*monitoring.TimeSeries{&timeseries},
 	}
-
-	resp, err := s.Projects.TimeSeries.Create(projectResource(projectID), &createTimeseriesRequest).Do()
+	_, err := s.Projects.TimeSeries.Create(projectResource(projectID), &createTimeseriesRequest).Do()
 	if err != nil {
 		return fmt.Errorf("Could not write time series value, %v ", err)
 	}
-	fmt.Println(resp)
 	return nil
 }
