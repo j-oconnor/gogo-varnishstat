@@ -14,6 +14,7 @@ import (
 func projectResource(projectID string) string {
 	return "projects/" + projectID
 }
+
 func customMetricType(metricType string) string {
 	return "custom.googleapis.com/varnish." + metricType
 }
@@ -58,7 +59,7 @@ func createCustomMetric(s *monitoring.Service, projectID, metricType string) err
 // 	return resp, nil
 // }
 
-// writeTimeSeriesValue writes a value for the custom metric created
+
 func writeTimeSeriesValue(s *monitoring.Service, projectID, metricType string, application string, value int64) error {
 	now := time.Now().UTC().Format(time.RFC3339Nano)
 	zone, _ := metadata.Zone()

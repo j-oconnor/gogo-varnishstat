@@ -37,7 +37,10 @@ func main() {
 	}
 
 	for _, stat := range statnames {
-		createCustomMetric(s, projectID, stat)
+		if err:= createCustomMetric(s, projectID, stat); err != nil {
+			log.Fatal(err)
+		}
+
 	}
 	log.Println("Start collection loop")
 	oldStats := make(map[string]int64)
